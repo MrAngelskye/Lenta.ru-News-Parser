@@ -1,0 +1,76 @@
+import requests
+import pandas as pd
+import json
+from bs4 import BeautifulSoup
+
+url = "https://lenta.ru/parts/news/"
+response = requests.get(url)
+soup = BeautifulSoup(response.text, "html.parser")
+
+# search link
+links = soup.find_all("a", {"class": "card-full-news _parts-news"})
+
+# search text
+text_rate = soup.find_all("h3", {"class": "card-full-news__title"})
+
+# search time
+time_rate = soup.find_all("time", {"class": "card-full-news__info-item card-full-news__date"})
+
+rubric_rate = soup.find_all("span", {"class": "card-full-news__info-item card-full-news__rubric"})
+
+# sheets for saving
+data_links = []
+data_text = []
+data_time = []
+data_rubric = []
+
+# all save
+data_all = []
+
+with open("links.json", "w") as file_link:
+    for link in links:
+        href = link.get("href")
+        data_links.append({
+            "href": href
+        })
+    json.dump(data_links, file_link, ensure_ascii=False, indent=2)
+
+with open("text.json", "w", encoding="utf-8") as file_text:
+    for text_line in text_rate:
+        text = text_line.text
+        data_text.append({
+            "text": text
+        })
+    json.dump(data_text, file_text, ensure_ascii=False, indent=2)
+
+with open("time.json", "w") as file_time:
+    for time_line in time_rate:
+        time_text = time_line.text
+        data_time.append({
+            "time": time_text
+        })
+    json.dump(data_time, file_time, ensure_ascii=False, indent=2)
+
+with open("rubric.json", "w") as file_rubric:
+    for rubric_line in rubric_rate:
+        rubric_text = rubric_line.text
+        data_rubric.append({
+            "rubric": rubric_text
+        })
+    json.dump(data_rubric, file_rubric, ensure_ascii=False, indent=2)
+
+# save all json file
+i = 0
+with open("data.json", "w", encoding="utf-8") as file_data:
+    for line in range(len(data_links)):
+        data_all.append({
+            "text": data_text[i]["text"],
+            "href": data_links[i]["href"],
+            "time": data_time[i]["time"],
+            "rubric": data_rubric[i]["rubric"]
+        })
+        i += 1
+    json.dump(data_all, file_data, ensure_ascii=False, indent=2)
+
+save_all = pd.read_json("data.json")
+save_all = save_all.to_csv("data.csv")
