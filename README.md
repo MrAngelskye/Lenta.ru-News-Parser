@@ -11,8 +11,14 @@ A Python web scraper that extracts news data from Lenta.ru. Collects headlines, 
 - ⚡ Fast and lightweight
 
 ## Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/lenta-parser.git
-cd lenta-parser
+pip install beautifulsoup4 requests pandas
+
+Usage
+Run the main script:
+python main.py
+
+The script will:
+Connect to Lenta.ru news section
+Extract latest news articles
+Save data to data.json and data.csv
